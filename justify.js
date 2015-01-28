@@ -244,12 +244,12 @@
      *       // CSS selector for the article body's paragraph
      *       selector: '.dualjustify'
      *   };
-     *   var callback = function(){$.DualJustify(options);};
+     *   var callback = function(){$.dualJustify(options);};
      *   $(callback);
      *   $(window).resize(callback);
      * })();
      */
-    function DualJustify(options) {
+    function dualJustify(options) {
 
         var timestart = Date.now(), timeend,
             selector = options && options.selector ? options.selector : DUALJUSTIFY_SELECTOR,
@@ -289,14 +289,14 @@
             widthNode.remove();
         }
         timeend = Date.now();
-        console.log('total execution: ' + (timeend - timestart) + 'ms', 'info', 'dualjustify');
+        console.log('dualJustify: ' + (timeend - timestart) + 'ms');
     }
 
     /**
      * jQuery implementation
      */
     $.extend({
-        DualJustify: DualJustify
+        dualJustify: dualJustify
     });
 
 })( jQuery );

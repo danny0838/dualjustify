@@ -39,7 +39,7 @@ In your blog, insert below codes:
             // CSS selector for the article body's paragraph
             selector: '.dualjustify'
         };
-        var callback = function(){$.DualJustify(options);};
+        var callback = function(){$.dualJustify(options);};
         $(callback);
         $(window).resize(callback);
     })();
