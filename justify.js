@@ -76,7 +76,13 @@
         var output = [], outerhtml, innerhtml, tag, text, currentStringInCJK, i, max, character, currentCharInCJK,
             currentStr = '', nodeName = node[0].nodeName.toLowerCase();
 
-        if (nodeName === 'br') {
+        if (node.is(options.skipSelectors)) {
+            // if the node is to be skipped
+            output.push({
+                type: TAG,
+                text: node[0].outerHTML
+            });
+        } else if (nodeName === 'br') {
             // if node is BR tag, include it directly
             output.push({
                 type: TAG,
