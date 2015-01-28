@@ -1,10 +1,22 @@
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
+        <meta charset="UTF-8">
         <title>Justify test</title>
-        <link rel="stylesheet" type="text/css" href="public/css/justify.css" />
-        <script src="http://yui.yahooapis.com/3.14.0/build/yui/yui-min.js"></script>
+        <link rel="stylesheet" type="text/css" href="justify.css" />
+        <script type="text/javascript" src="jquery.js"></script>
+        <script type="text/javascript" src="justify.js"></script>
+        <script>
+            (function(){
+                var options = {
+                    // CSS selector for the article body's paragraph
+                    selector: '.dualjustify'
+                };
+                var callback = function(){$.DualJustify(options);};
+                $(callback);
+                $(window).resize(callback);
+            })();
+        </script>
     </head>
     <body>
         
@@ -91,17 +103,6 @@
         <p class="dualjustify" style="width:50%">
                 而就機器人項目而言，它對 Google 的價值如《紐約時報》所說，將協助 Google 在製造業上有所建設。另外據知情人透露，Google 還希望能通過機器人與亞馬遜在零售業上展開競爭，將產品供應鏈不斷延伸，實現從工廠將產品直接配送到用戶家門口。
         </p>
-        
-
-        <script type="text/javascript" src="public/js/justify.js"></script>
-        <script>
-            var YUtil;
-            YUI().use('event-resize', 'dualjustify', function(Y){
-                YUtil = Y;
-                Y.on('domready', Y.Justify.DualJustify);
-                Y.on('resize', Y.Justify.DualJustify);
-            });
-        </script>
     </body>
 </html>
 

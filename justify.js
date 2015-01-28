@@ -1,11 +1,4 @@
-/*
-Copyright 2013, Yahoo Inc.
-Copyrights licensed under the New BSD License. See the accompanying LICENSE
-file for terms.
-*/
-
-/*global YUI */
-YUI.add('dualjustify', function (Y, NAME) {
+(function( $, undefined ){
 
     "use strict";
 
@@ -22,8 +15,7 @@ YUI.add('dualjustify', function (Y, NAME) {
 
         refBlock,  // last node that needs dualjustify. We store this node because we use it for testing char width
         widthNode, // a span that we used for inserting each single character and measure its width
-        widthMap = {},  // store all the single byte character's width
-        origHtml = {};  // cached all the nodes' original html in case of recovery the DOM.
+        widthMap = {};  // store all the single byte character's width
 
 
     /**
@@ -52,15 +44,15 @@ YUI.add('dualjustify', function (Y, NAME) {
 
         if (!widthNode) {
             refBlock.append('<span style="visibility:hidden;display:inline;margin:0;padding:0;border:0"></span>');
-            widthNode = refBlock.get('lastChild');
+            widthNode = refBlock.contents().last();
         }
 
         if (widthMap[character] === undefined) {
             if (character === ' ') {
                 widthMap[character] = getCharWidth('e e') - 2 * getCharWidth('e');
             } else {
-                widthNode.set('text', character);
-                widthMap[character] = widthNode.get('offsetWidth');
+                widthNode.text(character);
+                widthMap[character] = widthNode.width();
             }
         }
 
@@ -75,22 +67,22 @@ YUI.add('dualjustify', function (Y, NAME) {
      *       { type: CJK_STRING, text: '中文'},
      *       { type: TAG, text: '</a>'}
      *  ]
-     * @param node {Y.Node} a node which we want to parse its innerHTML
+     * @param node {jQuery.Node} a node which we want to parse its innerHTML
      * @return {Array} parsed result
      */
     function parseInnerHtml(node) {
         var output = [], outerhtml, innerhtml, tag, text, currentStringInCJK, i, max, character, currentCharInCJK,
-            currentStr = '', nodeName = node.get('nodeName').toLowerCase();
+            currentStr = '', nodeName = node[0].nodeName.toLowerCase();
 
         if (nodeName === 'br') {
             // if node is BR tag, include it directly
             output.push({
                 type: TAG,
-                text: node.get('outerHTML')
+                text: node[0].outerHTML
             });
-        } else if (node.get('childNodes').size() === 0 || node.test('.' + JUSTIFY_SPAN)) {
+        } else if (node[0].childNodes.length === 0 || node.is('.' + JUSTIFY_SPAN)) {
             // base case: this node contains pure text, parse string into array
-            text = node.get('text');
+            text = node.text();
             if (text.length > 0) {
                 // initial value
                 currentStringInCJK = isCJK(text.charAt(0));
@@ -129,12 +121,13 @@ YUI.add('dualjustify', function (Y, NAME) {
             // this is a node which contains more than one child node
 
             // concat all childnodes results
-            node.get('childNodes').each(function (child) {
+            node.contents().each(function () {
+                var child = $(this);
                 output = output.concat(parseInnerHtml(child));
             });
 
-            outerhtml = node.get('outerHTML');
-            innerhtml = node.get('innerHTML');
+            outerhtml = node[0].outerHTML;
+            innerhtml = node[0].innerHTML;
 
             // if we have outer html
             if (outerhtml.length > innerhtml.length) {
@@ -146,7 +139,6 @@ YUI.add('dualjustify', function (Y, NAME) {
                 }
             }
         }
-
         return output;
 
     }
@@ -162,7 +154,7 @@ YUI.add('dualjustify', function (Y, NAME) {
      *  ]
      * and the output would be in html, which you can directly use it to replace current node's innerhtml and see justifed result
      * @param elements {Array} an array which represents the content of current node's outer html
-     * @param node {Y.Node} node that needs dual-justify
+     * @param node {jQuery.Node} node that needs dual-justify
      * @return {String} html
      */
     function generateJustifyHtml(elements, node) {
@@ -171,14 +163,14 @@ YUI.add('dualjustify', function (Y, NAME) {
             return;
         }
 
-        var containerWidth = parseInt(node.getComputedStyle('width').replace('px', ''), 10),
+        var containerWidth = parseInt(node.css('width').replace('px', ''), 10),
             currentLineChars = 0,
             outputHtml = '',
-            fontsize = parseInt(node.getComputedStyle('fontSize').replace('px', ''), 10),
+            fontsize = parseInt(node.css('fontSize').replace('px', ''), 10),
             charPerLine = Math.floor(containerWidth / fontsize);
 
         // looping over all html elements and generating output html
-        Y.Array.each(elements, function (content, index) {
+        $.each(elements, function (index, content) {
 
             if ((index === 0 || index === elements.length - 1) && content.type === TAG) {
                 //skip the outer wrapper
@@ -247,60 +239,64 @@ YUI.add('dualjustify', function (Y, NAME) {
      * A function which transform a node to be dual-justify
      *
      * An example usage would be:
-     * YUI().use('event-resize', 'dualjustify', function(Y){
+     * (function(){
      *   var options = {
      *       // CSS selector for the article body's paragraph
-     *       selector: '.content p'
+     *       selector: '.dualjustify'
      *   };
-     *   Y.on('domready', Y.Justify.DualJustify, null, options);
-     *   Y.on('resize', Y.Justify.DualJustify, null, options);
-     * });
+     *   var callback = function(){$.DualJustify(options);};
+     *   $(callback);
+     *   $(window).resize(callback);
+     * })();
      */
-    Y.namespace('Justify').DualJustify = function (options) {
+    function DualJustify(options) {
 
         var timestart = Date.now(), timeend,
             selector = options && options.selector ? options.selector : DUALJUSTIFY_SELECTOR,
-            blocks = Y.all(selector);
+            blocks = $(selector);
 
-        refBlock = blocks.size() > 0 ? blocks.item(blocks.size() - 1) : null;
+        refBlock = blocks.length > 0 ? blocks.last() : null;
 
-        blocks.each(function (node, index) {
-            if (node.test('.' + NOJUSTIFY)) {
+        blocks.each(function (index) {
+            var node = $(this);
+            if (node.is('.' + NOJUSTIFY)) {
                 return;
             }
 
             var text,
                 elements,
-                justifySpans = node.all('.' + JUSTIFY_SPAN),
-                nodeID = node.generateID();
+                justifySpans = node.find('.' + JUSTIFY_SPAN),
+                origHtml = node.data("origHtml");
 
-            if (origHtml[nodeID]) {
-                node.setHTML(origHtml[nodeID]);
-            }
+            if (origHtml) node.html(origHtml);
 
-            text = node.get('text').trim();
+            text = node.text().trim();
 
-            if (text.length * 0.5 > text.replace(/[0-9a-zA-Z]/g, '').length || node.one('iframe,object,img,i,embed,table,ol,ul,li,.' + NOJUSTIFY)) {
+            if (text.length * 0.5 > text.replace(/[0-9a-zA-Z]/g, '').length || node.is('iframe,object,img,i,embed,table,ol,ul,li,.' + NOJUSTIFY)) {
                 // 1. over half of the text is english, bypass this
                 // 2. if there are any iframe/object... which is not inline text, we will skip
                 node.addClass(NOJUSTIFY);
                 return;
             }
 
-            if (!origHtml[nodeID]) {
-                origHtml[nodeID] = node.get('innerHTML');
-            }
+            if (!origHtml) node.data("origHtml", node.html());
 
             elements = parseInnerHtml(node);
-            node.setHTML(generateJustifyHtml(elements, node)).setStyle('word-break', 'break-all');
+            node.css('word-break', 'break-all').html(generateJustifyHtml(elements, node));
 
         });
         if (widthNode) {
-            widthNode.remove(true);
+            widthNode.remove();
         }
         timeend = Date.now();
-        Y.log('total execution: ' + (timeend - timestart), 'info', 'dualjustify');
-    };
+        console.log('total execution: ' + (timeend - timestart) + 'ms', 'info', 'dualjustify');
+    }
 
+    /**
+     * jQuery implementation
+     */
+    $.extend({
+        DualJustify: DualJustify
+    });
 
-}, "0.0.1", { requires: [ 'node' ]});
+})( jQuery );

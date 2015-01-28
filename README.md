@@ -3,7 +3,7 @@
 A javascript lib for implementing dual-justify for paragraphs in web.
 
 
-a demo url : http://taomin.github.io/dualjustify/
+a demo url : http://danny0838.github.io/dualjustify/
 
 
 ## What is Dual Justify (縱橫對齊)
@@ -30,33 +30,21 @@ WARNING: You better know basic HTML/CSS for your debugging
 In your blog, insert below codes:
 
 ```
-
-<link rel="stylesheet" type="text/css" href="http://newspeak.cc:3000/css/justify.css" />
-<script src="http://yui.yahooapis.com/3.14.0/build/yui/yui-min.js"></script>
-<script type="text/javascript" src="http://newspeak.cc:3000/js/justify.js"></script>
+<link rel="stylesheet" type="text/css" href="http://danny0838.github.io/dualjustify/justify.css" />
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript" src="http://danny0838.github.io/dualjustify/justify.js"></script>
 <script>
-    YUI().use('event-resize', 'dualjustify', function(Y){
+    (function(){
         var options = {
-                // CSS selector for the article body's paragraph
-                selector: '.item_content p'
+            // CSS selector for the article body's paragraph
+            selector: '.dualjustify'
         };
-        Y.on('domready', Y.Justify.DualJustify, null, options);
-
-        // use with caution, this takes ~100ms
-        Y.on('resize', Y.Justify.DualJustify, null, options);
-    });
+        var callback = function(){$.DualJustify(options);};
+        $(callback);
+        $(window).resize(callback);
+    })();
 </script>
 ```
-
-## Installation
-
-Based on YUI 3 and Node JS.
-
-Step:
-* Clone this repo
-* npm install
-* node app
-* load http://localhost:3000/ in your browser and see example
 
 ## Special thanks to
 The original idea came from @octw
