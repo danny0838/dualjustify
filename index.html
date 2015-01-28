@@ -9,13 +9,10 @@
         <script>
             (function(){
                 var options = {
-                    // CSS selector for the article body's paragraph
-                    selector: '.dualjustify',
+                    selector: '.dualjustify', // CSS selector for the article body's paragraph
                     debug: true
                 };
-                var callback = function(){$.dualJustify(options);};
-                $(callback);
-                $(window).resize(callback);
+                $.dualJustify(options);
             })();
         </script>
     </head>

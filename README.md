@@ -36,12 +36,9 @@ In your blog, insert below codes:
 <script>
     (function(){
         var options = {
-            // CSS selector for the article body's paragraph
-            selector: '.dualjustify'
+            selector: '.dualjustify' // CSS selector for the article body's paragraph
         };
-        var callback = function(){$.dualJustify(options);};
-        $(callback);
-        $(window).resize(callback);
+        $.dualJustify(options);
     })();
 </script>
 ```

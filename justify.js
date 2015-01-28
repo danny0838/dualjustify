@@ -17,6 +17,7 @@
     /*options*/
     var options = {
         'debug': false,
+        'resizeDelay': 100, // delay for re-rendering on window resize; false for no re-rendering
         'selector': '.dualjustify',
         'skipSelectors': 'script,style,textarea,iframe,object,img,embed',
         'regexCJK': /[\u4E00-\u9FFF\uF900-\uFADF\uFE30-\uFE4F\u3400-\u4DBF]/,
@@ -239,21 +240,8 @@
 
     /**
      * A function which transform a node to be dual-justify
-     *
-     * An example usage would be:
-     * (function(){
-     *   var options = {
-     *       // CSS selector for the article body's paragraph
-     *       selector: '.dualjustify'
-     *   };
-     *   var callback = function(){$.dualJustify(options);};
-     *   $(callback);
-     *   $(window).resize(callback);
-     * })();
      */
-    function dualJustify(customOptions) {
-
-        $.extend(options, customOptions);
+    function dualJustify() {
 
         var timestart = Date.now(), timeend, blocks = $(options.selector);
 
@@ -294,7 +282,21 @@
      * jQuery implementation
      */
     $.extend({
-        dualJustify: dualJustify
+        dualJustify: function(customOptions){
+            $.extend(options, customOptions);
+
+            // run dualJustify when DOM is ready
+            $(dualJustify);
+
+            // bind auto justify event on window resize
+            var delay = options.resizeDelay, timer;
+            if (typeof delay == 'number') {
+                $(window).resize(function(){
+                    if (timer) clearTimeout(timer);
+                    timer = setTimeout(dualJustify, delay);
+                });
+            }
+        }
     });
 
 })( jQuery );
