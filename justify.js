@@ -6,7 +6,6 @@
     var CJK_STRING = 'd',
         NONCJK_STRING = 's',
         TAG = 't',
-        DUALJUSTIFY_SELECTOR = '.dualjustify',
         JUSTIFY_SPAN = 'justify-span',
         JUSTIFY_HYPHEN = 'justify-hyphen',
         NOJUSTIFY = 'justify-noadjust',
@@ -17,6 +16,12 @@
         widthNode, // a span that we used for inserting each single character and measure its width
         widthMap = {};  // store all the single byte character's width
 
+    /*options*/
+    var options = {
+        'selector': '.dualjustify',
+        'skipSelectors': 'iframe,object,img,i,embed,table,ol,ul,li',
+        'regexHyphen': /[A-Za-z]/
+    };
 
     /**
      * A function for determing if this is CJK (Chinese/Japanese/Korean) chars
@@ -206,7 +211,7 @@
                             // hit line end
                             // we need to cut string here, and the rest will go to next line
                             units = charPerLine - currentLineChars;
-                            if (/[a-zA-Z]/.test(content.text.charAt(i - 1)) && /[a-zA-Z]/.test(content.text.charAt(i))) {
+                            if (options.regexHyphen.test(content.text.charAt(i - 1)) && options.regexHyphen.test(content.text.charAt(i))) {
                                 classes += ' ' + JUSTIFY_HYPHEN;
                                 textAlign = 'right';
                             }
@@ -249,11 +254,11 @@
      *   $(window).resize(callback);
      * })();
      */
-    function dualJustify(options) {
+    function dualJustify(customOptions) {
 
-        var timestart = Date.now(), timeend,
-            selector = options && options.selector ? options.selector : DUALJUSTIFY_SELECTOR,
-            blocks = $(selector);
+        $.extend(options, customOptions);
+
+        var timestart = Date.now(), timeend, blocks = $(options.selector);
 
         refBlock = blocks.length > 0 ? blocks.last() : null;
 
@@ -272,7 +277,7 @@
 
             text = node.text().trim();
 
-            if (text.length * 0.5 > text.replace(/[0-9a-zA-Z]/g, '').length || node.is('iframe,object,img,i,embed,table,ol,ul,li,.' + NOJUSTIFY)) {
+            if (text.length * 0.5 > text.replace(/[0-9a-zA-Z]/g, '').length || node.is(options.skipSelectors + ',.' + NOJUSTIFY)) {
                 // 1. over half of the text is english, bypass this
                 // 2. if there are any iframe/object... which is not inline text, we will skip
                 node.addClass(NOJUSTIFY);
