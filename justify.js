@@ -20,6 +20,8 @@
     var options = {
         'selector': '.dualjustify',
         'skipSelectors': 'iframe,object,img,i,embed,table,ol,ul,li',
+        'regexCJK': /[\u4E00-\u9FFF\uF900-\uFADF\uFE30-\uFE4F\u3400-\u4DBF]/,
+        'regexNonCJK': /[\u0000-\u2DFF]/,
         'regexHyphen': /[A-Za-z]/
     };
 
@@ -29,15 +31,9 @@
      * @void
      */
     function isCJK(character) {
-        // it is not as trivial as it may seen.
-        // CJK chars are spread all over the UTF encoding space. Not all of them are grouped together
-        // Japanese characters starts at 11904, then comes Chinese chars. Chinese chars ends around 40902
-        // Korean characters starts at 44032, ends at 55203.
-        // There are some chars that falls in this range and doesn't belong to CJK (e.g. 12331 is  〫)
-        // but they are rarely used so I ignore them
-        // ref: http://www.public.asu.edu/~rjansen/glyph_encoding.html
-        var charcode = character.charCodeAt(0);
-        return (charcode >= 11904 && charcode <= 40902) || (charcode >= 44032 && charcode <= 55203) ;
+        if ( options.regexNonCJK.test(character) ) return false;
+        if ( options.regexCJK.test(character) ) return true;
+        return getCharWidth(character) == getCharWidth('一');
     }
 
     /**
