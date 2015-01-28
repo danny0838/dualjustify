@@ -38,6 +38,7 @@
     /**
      * A function that calculates the char width, and store the value in widthMap.
      * @param character {String} The character that we want to get width
+     * @param refNode {jQuery.Node} the reference node
      * @void
      */
     function getCharWidth(character, refNode) {
@@ -48,10 +49,10 @@
             if (character === ' ') {
                 widthMap[key] = getCharWidth('e e', refNode) - 2 * getCharWidth('e', refNode);
             } else {
-                if (!widthNode) widthNode = $('<span style="visibility:hidden;display:inline;margin:0;padding:0;border:0"></span>');
+                if (!widthNode) widthNode = $('<span style="display:inline;margin:0;padding:0;border:0;position:absolute;overflow:visible;white-space:nowrap;"></span>');
                 refNode.append(widthNode);
-                widthNode.text(character);
-                widthMap[key] = widthNode.width();
+                widthNode.text((new Array(101).join(character)));
+                widthMap[key] = widthNode.width()/100.0;
             }
         }
 
@@ -164,10 +165,10 @@
             return;
         }
 
-        var containerWidth = parseInt(node.css('width').replace('px', ''), 10),
+        var containerWidth = parseFloat(node.css('width').replace('px', '')),
             currentLineChars = 0,
             outputHtml = '',
-            fontsize = parseInt(node.css('fontSize').replace('px', ''), 10),
+            fontsize = parseFloat(node.css('fontSize').replace('px', '')),
             charPerLine = Math.floor(containerWidth / fontsize);
 
         // looping over all html elements and generating output html
@@ -284,9 +285,7 @@
             node.css('word-break', 'break-all').html(generateJustifyHtml(elements, node));
 
         });
-        if (widthNode) {
-            widthNode.remove();
-        }
+        if (widthNode) widthNode.remove();
         timeend = Date.now();
         if (options.debug) console.log('dualJustify: ' + (timeend - timestart) + 'ms');
     }
