@@ -19,7 +19,7 @@
     /*options*/
     var options = {
         'selector': '.dualjustify',
-        'skipSelectors': 'iframe,object,img,i,embed,table,ol,ul,li',
+        'skipSelectors': 'iframe,object,img,embed',
         'regexCJK': /[\u4E00-\u9FFF\uF900-\uFADF\uFE30-\uFE4F\u3400-\u4DBF]/,
         'regexNonCJK': /[\u0000-\u2DFF]/,
         'regexHyphen': /[A-Za-z]/
