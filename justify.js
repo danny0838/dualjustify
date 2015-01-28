@@ -18,6 +18,7 @@
 
     /*options*/
     var options = {
+        'debug': false,
         'selector': '.dualjustify',
         'skipSelectors': 'iframe,object,img,embed',
         'regexCJK': /[\u4E00-\u9FFF\uF900-\uFADF\uFE30-\uFE4F\u3400-\u4DBF]/,
@@ -219,7 +220,7 @@
                     while (cutpos < content.text.length && /\s/.test(content.text.charAt(cutpos))) {
                         cutpos += 1;
                     }
-                    outputHtml += '<span class="' + classes + '" style="text-align:' + textAlign + ';width:' + (fontsize * units) + 'px;font-size:' + fontsize + 'px">' + content.text.slice(0, cutpos) + '</span>';
+                    outputHtml += '<span class="' + classes + '" style="text-align:' + textAlign + ';width:' + (fontsize * units) + 'px;font-size:' + fontsize + 'px;' + (options.debug ? 'background-color:#FF9;' : '') + '">' + content.text.slice(0, cutpos) + '</span>';
                     content.text = content.text.substring(cutpos);
                     currentLineChars = (currentLineChars + units) % charPerLine;
                     textAlign = content.text.length > 0 ? 'left' : 'center';
@@ -290,7 +291,7 @@
             widthNode.remove();
         }
         timeend = Date.now();
-        console.log('dualJustify: ' + (timeend - timestart) + 'ms');
+        if (options.debug) console.log('dualJustify: ' + (timeend - timestart) + 'ms');
     }
 
     /**
