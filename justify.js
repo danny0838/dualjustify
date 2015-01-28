@@ -11,8 +11,6 @@
         NOJUSTIFY = 'justify-noadjust',
 
         /*private variable*/
-
-        refBlock,  // last node that needs dualjustify. We store this node because we use it for testing char width
         widthNode, // a span that we used for inserting each single character and measure its width
         widthMap = {};  // store all the single byte character's width
 
@@ -42,23 +40,22 @@
      * @param character {String} The character that we want to get width
      * @void
      */
-    function getCharWidth(character) {
+    function getCharWidth(character, refNode) {
+        if (!refNode) refNode = $(document.body);
+        var key = [character, refNode.css('font-size'), refNode.css('font-family'), refNode.css('font-weight')].join(';');
 
-        if (!widthNode) {
-            refBlock.append('<span style="visibility:hidden;display:inline;margin:0;padding:0;border:0"></span>');
-            widthNode = refBlock.contents().last();
-        }
-
-        if (widthMap[character] === undefined) {
+        if (widthMap[key] === undefined) {
             if (character === ' ') {
-                widthMap[character] = getCharWidth('e e') - 2 * getCharWidth('e');
+                widthMap[key] = getCharWidth('e e', refNode) - 2 * getCharWidth('e', refNode);
             } else {
+                if (!widthNode) widthNode = $('<span style="visibility:hidden;display:inline;margin:0;padding:0;border:0"></span>');
+                refNode.append(widthNode);
                 widthNode.text(character);
-                widthMap[character] = widthNode.width();
+                widthMap[key] = widthNode.width();
             }
         }
 
-        return widthMap[character];
+        return widthMap[key];
     }
 
     /**
@@ -98,10 +95,6 @@
                 for (i = 0, max = text.length; i < max; i += 1) {
                     character = text.charAt(i);
                     currentCharInCJK = isCJK(character);
-
-                    if (!currentCharInCJK) {
-                        getCharWidth(character);
-                    }
 
                     // if new char uses the same lang w/ current string
                     if (currentCharInCJK === currentStringInCJK) {
@@ -209,7 +202,7 @@
                     classes = JUSTIFY_SPAN;
                     spaceleft = (charPerLine - currentLineChars) * fontsize;  //left space in current row; in pixels
                     for (i = 0, max = content.text.length; i < max; i += 1) {
-                        textWidth += widthMap[content.text.charAt(i)];
+                        textWidth += getCharWidth(content.text.charAt(i), node);
                         if (spaceleft < textWidth) {
                             // hit line end
                             // we need to cut string here, and the rest will go to next line
@@ -262,8 +255,6 @@
         $.extend(options, customOptions);
 
         var timestart = Date.now(), timeend, blocks = $(options.selector);
-
-        refBlock = blocks.length > 0 ? blocks.last() : null;
 
         blocks.each(function (index) {
             var node = $(this);
