@@ -34,13 +34,27 @@ In your blog, insert below codes:
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script type="text/javascript" src="http://danny0838.github.io/dualjustify/justify.js"></script>
 <script>
-    (function(){
-        var options = {
-            selector: '.dualjustify' // CSS selector for the article body's paragraph
-        };
-        $.dualJustify(options);
-    })();
+(function(){
+    var options = {
+        selector: '.dualjustify' // CSS selector for the article body's paragraph
+    };
+    $.dualJustify(options);
+})();
 </script>
+```
+
+Here is the full list of customizable options and their default values:
+
+```
+    var options = {
+        'debug': false, // highlights adjusted text and displays debug messages in the browser console
+        'resizeDelay': 100, // delay for re-rendering on window resize; false for no re-rendering
+        'selector': '.dualjustify', // CSS selector for the article body's paragraph
+        'skipSelectors': 'script,style,textarea,iframe,object,img,embed', // CSS selector for elements to be skipped
+        'regexCJK': /[\u4E00-\u9FFF\uF900-\uFADF\uFE30-\uFE4F\u3400-\u4DBF]/, // RegExp for chars that must be considered as a CJK one
+        'regexNonCJK': /[\u0000-\u2DFF]/, // RegExp for chars that must not be considered as a CJK one
+        'regexHyphen': /[A-Za-z]/ // RegExp for chars that should be added a hyphen if breaked
+    };
 ```
 
 ## Special thanks to
