@@ -56,6 +56,14 @@ Here is the full list of customizable options and their default values:
     };
 ```
 
+## How to use the bookmarklet?
+
+Create a bookmark with below codes in the link field:
+
+```
+javascript:(function(){dualJustify={selector:'p'};d=document;z=d.createElement('script');z.src='http://danny0838.github.io/dualjustify/bookmarklet.js';d.body.appendChild(z);})();
+```
+
 ## Special thanks to
 The original idea came from @octw
 http://blog.readmoo.com/2013/12/03/why-not-use-justification-on-web/
