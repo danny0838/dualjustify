@@ -6,9 +6,21 @@
     var CJK_STRING = 'd',
         NONCJK_STRING = 's',
         TAG = 't',
-        JUSTIFY_SPAN = 'justify-span',
-        JUSTIFY_HYPHEN = 'justify-hyphen',
-        NOJUSTIFY = 'justify-noadjust',
+        JUSTIFY_CSS_ID = 'dualjustify-css',
+        JUSTIFY_SPAN = 'dualjustify-span',
+        JUSTIFY_HYPHEN = 'dualjustify-hyphen',
+        JUSTIFY_CSS = ''
+            + '.' + JUSTIFY_HYPHEN + ':after {'
+                + 'content: "-";'
+                + 'position: absolute;'
+            + '}'
+            + '.' + JUSTIFY_SPAN + ' {'
+                + 'text-align: center;'
+                + 'display: inline-block;'
+                + 'white-space: nowrap;'
+                + 'font-weight: normal !important;'
+            + '}',
+        NOJUSTIFY = 'dualjustify-noadjust',
 
         /*private variable*/
         widthNode, // a span that we used for inserting each single character and measure its width
@@ -244,6 +256,10 @@
     function dualJustify() {
 
         var timestart = Date.now(), timeend, blocks = $(options.selector);
+
+        // insert css
+        var css = $('#' + JUSTIFY_CSS_ID);
+        if (!css.length) $('head, body').append( $('<style>').attr('id', JUSTIFY_CSS_ID).text(JUSTIFY_CSS) );
 
         blocks.each(function (index) {
             var node = $(this);

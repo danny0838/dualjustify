@@ -30,7 +30,6 @@ WARNING: You better know basic HTML/CSS for your debugging
 In your blog, insert below codes:
 
 ```
-<link rel="stylesheet" type="text/css" href="http://danny0838.github.io/dualjustify/justify.css" />
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script type="text/javascript" src="http://danny0838.github.io/dualjustify/justify.js"></script>
 <script>
