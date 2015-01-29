@@ -31,7 +31,7 @@ In your blog, insert below codes:
 
 ```
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
-<script type="text/javascript" src="http://danny0838.github.io/dualjustify/justify.js"></script>
+<script src="http://danny0838.github.io/dualjustify/justify.js"></script>
 <script>
 (function(){
     var options = {
